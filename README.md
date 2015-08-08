@@ -38,21 +38,11 @@ console.log(capitals.raw());
 ### Module Methods
 #### create *(creates a new instance of "Dirp"(an internal class))*
 ```
-create(delimiter], data) => instance {Dirp}
+create() => instance {Dirp}
 create(delimiter) => instance {Dirp}
-create(data) => instance {Dirp}
     delimiter {string} Path delimiter. Defaults to '.'
-    data {object} Initial object. Defaults to {}
 ```
 * e.g. "products.users.name", "app/lib/test", "country:state:city" ...
-* `data` is not deep-copied. Use `deepCopy` method if necessary.
-
-#### deepCopy *(deep-copies an object (provided for convenience)*
-```
-deepCopy(srcObj) => {object}
-    srcObj {object} An object to be copied.
-```
-* It only deep-copies *stringifiable* data with the current implementation.
 
 ### Instance Methods
 #### set *(sets the path to a value)*
@@ -84,8 +74,9 @@ exists(path) => {boolean}
 ```
 raw() => {object}
 ```
+* This returns a direct reference to the internal data. Any modification to the object will affect the source.
 #### clone *(returns a new instance of Dirp with a deep-copy of its raw data)*
 ```
 clone() => {Dirp}
 ```
-* It only deep-copies *stringifiable* data with the current implementation.
+* It only deep-copies *stringifiable* data. If a value passed to `set()` contains a getter/setter, or properties that are not enumerable, those would be ignored. *(Note: this may change in the future)*
