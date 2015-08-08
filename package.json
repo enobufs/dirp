@@ -1,6 +1,6 @@
 {
   "name": "dirp",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Object directory accessor using tokenized path string.",
   "main": "index.js",
   "scripts": {
