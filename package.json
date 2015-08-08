@@ -1,0 +1,27 @@
+{
+  "name": "dirp",
+  "version": "0.0.1",
+  "description": "Object directory accessor using tokenized path string.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "cover": "node_modules/.bin/istanbul cover node_modules/.bin/_mocha -- -R spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:enobufs/dirp.git"
+  },
+  "keywords": [
+    "directory",
+    "path",
+    "tree",
+    "cache",
+    "dictionary"
+  ],
+  "author": "enobufs",
+  "license": "MIT",
+  "devDependencies": {
+    "istanbul": "^0.3.17",
+    "mocha": "^2.2.5"
+  }
+}
