@@ -116,25 +116,22 @@ describe('test', function () {
         });
     });
 
-    describe("#toJSON & #clone", function () {
+    describe("#raw & #clone", function () {
         var d;
         beforeEach(function () {
             d = dirp.create();
         });
-        it("#toJSON", function () {
+        it("#raw", function () {
             d.set('array.0', 0)
             d.set('array.1', 1)
-            assert.deepEqual({ array: {0: 0, 1: 1}}, d.toJSON());
+            assert.deepEqual({ array: {0: 0, 1: 1}}, d.raw());
         });
         it("#clone", function () {
             d.set('array.0', 0)
             d.set('array.1', 1)
             var d2 = d.clone();
             assert.ok(d != d2);
-            assert.deepEqual(d.toJSON(), d2.toJSON());
+            assert.deepEqual(d.raw(), d2.raw());
         });
-    });
-
-    describe("#clone test", function () {
     });
 });

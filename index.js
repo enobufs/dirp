@@ -58,12 +58,12 @@ Dirp.prototype.exist = function (path) {
     return (this.get(path) !== undefined);
 };
 
-Dirp.prototype.toJSON = function () {
+Dirp.prototype.raw = function () {
     return JSON.parse(JSON.stringify(this._data));
 };
 
 Dirp.prototype.clone = function () {
-    return new Dirp(this._delim, this.toJSON());
+    return new Dirp(this._delim, this.raw());
 };
 
 Dirp.prototype._splitPath = function (path) {
