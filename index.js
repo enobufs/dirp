@@ -6,7 +6,12 @@ function Dirp(delimiter, data) {
         delimiter = void(0);
     }
     this._delim = delimiter || '.';
-    this._data = (typeof data === 'object' && !Array.isArray(data))? data:{};
+
+    if (isDirp(data)) {
+        this._data = data;
+    } else {
+        this._data = makeDirp(); 
+    }
 }
 
 Dirp.prototype.set = function (path, val) {
@@ -16,7 +21,7 @@ Dirp.prototype.set = function (path, val) {
         var prop = paths[i];
         if (i < paths.length - 1) {
             if (!o.hasOwnProperty(prop)) {
-                o[prop] = makeDir();
+                o[prop] = makeDirp();
             }
             o = o[prop];
         } else {
@@ -26,7 +31,7 @@ Dirp.prototype.set = function (path, val) {
 };
 
 Dirp.prototype.get = function (path) {
-    var o = getRaw(this._splitPath(path), this._data);
+    var o = getRawValue(this._splitPath(path), this._data);
     if (o && o._dirp) {
         return undefined;
     }
@@ -50,7 +55,7 @@ Dirp.prototype.unset = function (path) {
 };
 
 Dirp.prototype.exists = function (path) {
-    var o = getRaw(this._splitPath(path), this._data);
+    var o = getRawValue(this._splitPath(path), this._data);
     return (o !== undefined);
 };
 
@@ -66,16 +71,23 @@ Dirp.prototype._splitPath = function (path) {
     return path.split(this._delim);
 }
 
-function makeDir(obj) {
-    var obj = {};
-    // mark it as derp ..
+function markAsDirp(obj) {
+    // mark it derp .. no, dirp
     Object.defineProperty(obj, '_dirp', {
         get: function () { return true; }
     });
     return obj;
 };
 
-function getRaw(paths, obj) {
+function makeDirp() {
+    return markAsDirp({});
+};
+
+function isDirp(obj) {
+    return (isAssociativeArray(obj) && obj._dirp);
+}
+
+function getRawValue(paths, obj) {
     var o = obj;
     for (var i = 0; i < paths.length; ++i) {
         var prop = paths[i];
@@ -88,15 +100,34 @@ function getRaw(paths, obj) {
 }
 
 function deepCopy(obj) {
-    // TODO: switch to faster deep-copy
-    return JSON.parse(JSON.stringify(obj));
+    if (!obj._dirp) {
+        return JSON.parse(JSON.stringify(obj))
+    }
+
+    var copy = makeDirp();
+    Object.keys(obj).forEach(function (prop) {
+        var o = obj[prop];
+        if (isAssociativeArray(o)) {
+            // associative array
+            copy[prop] = deepCopy(o);
+        } else if (Array.isArray(o)) {
+            // array
+            copy[prop] = JSON.parse(JSON.stringify(o));
+        } else {
+            // primitive
+            copy[prop] = o;
+        }
+    });
+    return copy;
 };
 
+function isAssociativeArray(o) {
+    return (o && typeof o === 'object' && !Array.isArray(o));
+}
 
 module.exports = {
     create: function (delimiter, data) {
         return new Dirp(delimiter, data);
-    },
-    deepCopy: deepCopy
+    }
 };
 

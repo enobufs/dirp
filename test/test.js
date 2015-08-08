@@ -21,14 +21,27 @@ describe('test', function () {
             var d = dirp.create();
             assert.deepEqual({}, d._data);
         });
-        it("data should correctly be set", function () {
+        it("no dirp data should be ignored", function () {
             var data = { msg: 'hello', st: { count: 21, happy: true }};
             var d = dirp.create(data);
+            assert.deepEqual({}, d._data);
+        });
+        it("dirp data should correctly be set", function () {
+            var data = { msg: 'hello', st: { count: 21, happy: true }};
+            var d = dirp.create();
+            d.set('msg', 'hello');
+            d.set('st.count', 21);
+            d.set('st.happy', true);
+            var d = dirp.create(d.raw());
             assert.deepEqual(data, d._data);
         });
         it("delimiter and data should correctly be set", function () {
             var data = { msg: 'hello', st: { count: 21, happy: true }};
-            var d = dirp.create(':', data);
+            var d = dirp.create();
+            d.set('msg', 'hello');
+            d.set('st.count', 21);
+            d.set('st.happy', true);
+            var d = dirp.create(':', d.raw());
             assert.strictEqual(':', d._delim);
             assert.deepEqual(data, d._data);
         });
@@ -134,8 +147,9 @@ describe('test', function () {
             assert.deepEqual({ array: {0: 0, 1: 1}}, d.raw());
         });
         it("#clone", function () {
-            d.set('array.0', 0)
-            d.set('array.1', 1)
+            d.set('id', 999)
+            d.set('st', { xp: 3 })
+            d.set('items', [4, 5, 6])
             var d2 = d.clone();
             assert.ok(d != d2);
             assert.deepEqual(d.raw(), d2.raw());
