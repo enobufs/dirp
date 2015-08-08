@@ -38,45 +38,48 @@ console.log(capitals.raw());
 ### Module Methods
 #### create *(creates a new instance of "Dirp"(an internal class))*
 ```
-create(delimiter, data) => instance {Dirp}
+create(delimiter], data) => instance {Dirp}
 create(delimiter) => instance {Dirp}
 create(data) => instance {Dirp}
+    delimiter {string} Path delimiter. Defaults to '.'
+    data {object} Initial object. Defaults to {}
 ```
-* delimiter {string} *optional* Path delimiter. Defaults to '.'
-     * e.g. "products.users.name", "app/lib/test", "country:state:city" ...
-* data {object} *optional* Initial object. Defaults to {}
+* e.g. "products.users.name", "app/lib/test", "country:state:city" ...
+* `data` is not deep-copied. Use `deepCopy` method if necessary.
 
 #### deepCopy *(deep-copies an object (provided for convenience)*
 ```
 deepCopy(srcObj) => {object}
+    srcObj {object} An object to be copied.
 ```
-* srcObj {object} An object to be copied.
+* It only deep-copies *stringifiable* data with the current implementation.
 
 ### Instance Methods
 #### set *(sets the path to a value)*
 ```
 set(path, value) => {void}
+    path {string} Path to a value
+    value {any} Arbitrary value
 ```
-* path {string} Path to a value
-* value {any} Arbitrary value
 
 #### get *(gets a value at the path)*
 ```
 get(path) => {any}
+    path {string} Path to a value
 ```
-* path {string} Path to a value
+* `undefined` is returned if the `path` is not a leaf.
 
 #### unset *(unsets value at the path)*
 ```
 unset(path) => {void}
+    path {string} Path to be unset
 ```
-* path {string} Path to be unset
 
-#### exist *(tests if the path has a value)*
+#### exists *(tests if the path exists)*
 ```
-exist(path) => {boolean}
+exists(path) => {boolean}
+    path {string} Path to be tested
 ```
-* path {string} Path to be tested
 #### raw *(returns a raw data {object})*
 ```
 raw() => {object}
@@ -85,5 +88,4 @@ raw() => {object}
 ```
 clone() => {Dirp}
 ```
-* Limitation
-    * It only deep-copies *stringifiable* data with the current implementation.
+* It only deep-copies *stringifiable* data with the current implementation.

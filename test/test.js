@@ -57,6 +57,13 @@ describe('test', function () {
             d.set(path, expects);
             assert.deepEqual(expects, d.get(path));
         });
+        it("only the leaf should be readable", function () {
+            d.set('us.ca.sfx', 'San Mateo');
+            //console.log('d:', JSON.stringify(d));
+            assert.strictEqual('San Mateo', d.get('us.ca.sfx'));
+            assert.strictEqual(undefined, d.get('us.ca'));
+            assert.strictEqual(undefined, d.get('us'));
+        })
     });
 
     describe("#unset method test", function () {
@@ -95,7 +102,7 @@ describe('test', function () {
         });
     });
 
-    describe("#exist method test", function () {
+    describe("#exists method test", function () {
         var d;
         beforeEach(function () {
             d = dirp.create();
@@ -104,15 +111,15 @@ describe('test', function () {
             var expects = [3, 'cool', true, null];
             expects.forEach(function (val) {
                 d.set('item', val);
-                assert.strictEqual(true, d.exist('item'));
+                assert.strictEqual(true, d.exists('item'));
             });
         });
         it("should return false if the path does not exist", function () {
             d.set('item', {});
-            assert.strictEqual(false, d.exist('item.a'));
-            assert.strictEqual(false, d.exist('item.a.b'));
-            assert.strictEqual(false, d.exist('gem'));
-            assert.strictEqual(false, d.exist('gem.value'));
+            assert.strictEqual(false, d.exists('item.a'));
+            assert.strictEqual(false, d.exists('item.a.b'));
+            assert.strictEqual(false, d.exists('gem'));
+            assert.strictEqual(false, d.exists('gem.value'));
         });
     });
 

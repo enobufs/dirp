@@ -16,7 +16,7 @@ Dirp.prototype.set = function (path, val) {
         var prop = paths[i];
         if (i < paths.length - 1) {
             if (!o.hasOwnProperty(prop)) {
-                o[prop] = {};
+                o[prop] = makeDir();
             }
             o = o[prop];
         } else {
@@ -26,14 +26,9 @@ Dirp.prototype.set = function (path, val) {
 };
 
 Dirp.prototype.get = function (path) {
-    var paths = this._splitPath(path);
-    var o = this._data;
-    for (var i = 0; i < paths.length; ++i) {
-        var prop = paths[i];
-        if (!o.hasOwnProperty(prop)) {
-            return undefined;
-        }
-        o = o[prop];
+    var o = getRaw(this._splitPath(path), this._data);
+    if (o && o._dirp) {
+        return undefined;
     }
     return o;
 };
@@ -54,8 +49,9 @@ Dirp.prototype.unset = function (path) {
     }
 };
 
-Dirp.prototype.exist = function (path) {
-    return (this.get(path) !== undefined);
+Dirp.prototype.exists = function (path) {
+    var o = getRaw(this._splitPath(path), this._data);
+    return (o !== undefined);
 };
 
 Dirp.prototype.raw = function () {
@@ -68,6 +64,27 @@ Dirp.prototype.clone = function () {
 
 Dirp.prototype._splitPath = function (path) {
     return path.split(this._delim);
+}
+
+function makeDir(obj) {
+    var obj = {};
+    // mark it as derp ..
+    Object.defineProperty(obj, '_dirp', {
+        get: function () { return true; }
+    });
+    return obj;
+};
+
+function getRaw(paths, obj) {
+    var o = obj;
+    for (var i = 0; i < paths.length; ++i) {
+        var prop = paths[i];
+        if (!o.hasOwnProperty(prop)) {
+            return undefined;
+        }
+        o = o[prop];
+    }
+    return o;
 }
 
 function deepCopy(obj) {
