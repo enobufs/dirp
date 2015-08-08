@@ -16,7 +16,7 @@ capitals.set('jp.tokyo', 'shinjuku');
 capitals.set('jp.osaka', 'osaka');
  
 console.log(capitals.get('us.alabama'));
-// mongomery
+// montgomery
  
 console.log(capitals.get('us.california'));
 // sacramento
@@ -35,46 +35,55 @@ console.log(capitals.raw());
 
 ## API
 
-### Constructor
-#### create
+### Module Methods
+#### create *(creates a new instance of "Dirp"(an internal class))*
 ```
 create(delimiter, data) => instance {Dirp}
 create(delimiter) => instance {Dirp}
 create(data) => instance {Dirp}
 ```
 * delimiter {string} *optional* Path delimiter. Defaults to '.'
+     * e.g. "products.users.name", "app/lib/test", "country:state:city" ...
 * data {object} *optional* Initial object. Defaults to {}
 
+#### deepCopy *(deep-copies an object (provided for convenience)*
+```
+deepCopy(srcObj) => {object}
+```
+* srcObj {object} An object to be copied.
+
 ### Instance Methods
-#### set
+#### set *(sets the path to a value)*
 ```
 set(path, value) => {void}
 ```
 * path {string} Path to a value
-* value {any} Aribtrary value
+* value {any} Arbitrary value
 
-#### get
+#### get *(gets a value at the path)*
 ```
-get(path) => value {any}
+get(path) => {any}
 ```
 * path {string} Path to a value
 
-#### unset
+#### unset *(unsets value at the path)*
 ```
 unset(path) => {void}
 ```
 * path {string} Path to be unset
 
-#### exist(path) => {boolean}
+#### exist *(tests if the path has a value)*
 ```
 exist(path) => {boolean}
 ```
 * path {string} Path to be tested
-#### raw
+#### raw *(returns a raw data {object})*
 ```
 raw() => {object}
 ```
-#### clone
+#### clone *(returns a new instance of Dirp with a deep-copy of its raw data)*
 ```
 clone() => {Dirp}
 ```
+* Limitation
+    * It only deep-copies *stringifiable* data with the current implementation.

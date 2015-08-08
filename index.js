@@ -59,19 +59,27 @@ Dirp.prototype.exist = function (path) {
 };
 
 Dirp.prototype.raw = function () {
-    return JSON.parse(JSON.stringify(this._data));
+    return this._data;
 };
 
 Dirp.prototype.clone = function () {
-    return new Dirp(this._delim, this.raw());
+    return new Dirp(this._delim, deepCopy(this._data));
 };
 
 Dirp.prototype._splitPath = function (path) {
     return path.split(this._delim);
 }
 
+function deepCopy(obj) {
+    // TODO: switch to faster deep-copy
+    return JSON.parse(JSON.stringify(obj));
+};
 
-module.exports.create = function (delimiter, data) {
-    return new Dirp(delimiter, data);
+
+module.exports = {
+    create: function (delimiter, data) {
+        return new Dirp(delimiter, data);
+    },
+    deepCopy: deepCopy
 };
 
