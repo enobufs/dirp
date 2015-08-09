@@ -57,9 +57,10 @@ create(data) => instance {Dirp}
 ### Instance Methods
 #### set *(sets the path to a value)*
 ```
-set(path, value) => {void}
+set(path, value) => {boolean}
     path {string} Path to a value
     value {any} Arbitrary value
+    returns true on success
 ```
 
 #### get *(gets a value at the path)*
@@ -71,8 +72,9 @@ get(path) => {any}
 
 #### unset *(unsets value at the path)*
 ```
-unset(path) => {void}
+unset(path) => {boolean}
     path {string} Path to be unset
+    returns true on success
 ```
 
 #### exists *(tests if the path exists)*

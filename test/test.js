@@ -55,23 +55,23 @@ describe('test', function () {
         it("set a primitive data at the top", function () {
             var expects = [3, 'cool', true, null];
             expects.forEach(function (val) {
-                d.set('item', val);
+                assert(d.set('item', val));
                 assert.strictEqual(val, d.get('item'));
             });
         });
         it("set an object at the top", function () {
             var expects = { name: 'John', age: 30 };
-            d.set('item', expects);
+            assert(d.set('item', expects));
             assert.deepEqual(expects, d.get('item'));
         });
         it("set data at a path", function () {
             var expects = 'derp';
             var path = 'users.info.quality';
-            d.set(path, expects);
+            assert(d.set(path, expects));
             assert.deepEqual(expects, d.get(path));
         });
         it("only the leaf should be readable", function () {
-            d.set('us.ca.sfx', 'San Mateo');
+            assert(d.set('us.ca.sfx', 'San Mateo'));
             assert.strictEqual('San Mateo', d.get('us.ca.sfx'));
             assert.strictEqual(undefined, d.get('us.ca'));
             assert.strictEqual(undefined, d.get('us'));
@@ -79,17 +79,28 @@ describe('test', function () {
         it("empty string is a valid string", function () {
             var expects = 'derp';
             var path = '';
-            d.set(path, expects);
+            assert(d.set(path, expects));
             assert.deepEqual(expects, d.get(path));
         });
         it("empty string is a valid string (2)", function () {
             var expects = 'derp';
             var path = '..';
-            d.set(path, expects);
+            assert(d.set(path, expects));
             assert.deepEqual(expects, d.get(path));
         });
         it("invalid path should simply be ignored", function () {
             d.set(666, 'ignore me');
+        });
+        it("setting a path into value should be ignored", function () {
+            var val = { type: 2 }
+            assert(d.set('items.item', val));
+            assert(!d.set('items.item.bad', true));
+            assert.deepEqual(val, d.get('items.item'));
+        });
+        it("should not read prop of a user value", function () {
+            var val = { type: 2 }
+            assert(d.set('items.item', val));
+            assert.strictEqual(undefined, d.get('items.item.type'));
         });
     });
 
@@ -104,10 +115,8 @@ describe('test', function () {
                 d.set('item', val);
                 assert.strictEqual(val, d.get('item'));
             });
-            expects.forEach(function (i) {
-                d.unset('item');
-                assert.strictEqual(undefined, d.get('item'));
-            });
+            assert(d.unset('item'));
+            assert.strictEqual(undefined, d.get('item'));
         });
         it("unset multiple paths at shared a path", function () {
             var shared = 'us.california';
@@ -126,6 +135,16 @@ describe('test', function () {
             paths.forEach(function (path) {
                 assert.strictEqual(undefined, d.get(path));
             })
+        });
+        it("unset non-existing path shold return false", function () {
+            assert(!d.unset('items.item'));
+            assert.deepEqual(undefined, d.get('items.item'));
+        });
+        it("should not unset property of user value", function () {
+            var val = { type: 2 }
+            assert(d.set('items.item', val));
+            assert(!d.unset('items.item.type'));
+            assert.deepEqual(val, d.get('items.item'));
         });
     });
 

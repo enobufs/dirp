@@ -16,17 +16,24 @@ function Dirp(delimiter, data) {
 Dirp.prototype.set = function (path, val) {
     var paths = this._splitPath(path);
     var o = this._data;
-    paths.forEach(function (prop, i) {
+    var res = false;
+    for (var i = 0; i < paths.length; ++i) {
+        if (!isDirp(o)) {
+            // cannot write into user value. abort.
+            break;
+        }
+        var prop = paths[i];
         if (i < paths.length - 1) {
             if (!o.hasOwnProperty(prop)) {
                 o[prop] = makeDirp();
             }
             o = o[prop];
-            require('assert').ok(isDirp(o));
         } else {
             o[prop] = val;
+            res = true;
         }
-    });
+    }
+    return res;
 };
 
 Dirp.prototype.get = function (path) {
@@ -40,17 +47,23 @@ Dirp.prototype.get = function (path) {
 Dirp.prototype.unset = function (path) {
     var paths = this._splitPath(path);
     var o = this._data;
+    var res = false;
     for (var i = 0; i < paths.length; ++i) {
+        if (!isDirp(o)) {
+            break;
+        }
         var prop = paths[i];
         if (!o.hasOwnProperty(prop)) {
-            return;
+            break;
         }
         if (i === paths.length - 1) {
             delete o[prop];
-            return;
+            res = true;
+            break;
         }
         o = o[prop];
     }
+    return res;
 };
 
 Dirp.prototype.clear = function () {
@@ -131,6 +144,9 @@ function isDirp(obj) {
 function getRawValue(paths, obj) {
     var o = obj;
     for (var i = 0; i < paths.length; ++i) {
+        if (!isDirp(o)) {
+            return undefined;
+        }
         var prop = paths[i];
         if (!o.hasOwnProperty(prop)) {
             return undefined;
