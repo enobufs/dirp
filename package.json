@@ -1,6 +1,6 @@
 {
   "name": "dirp",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "A key-value in-memory store using tokenized path as a key.",
   "main": "index.js",
   "scripts": {
