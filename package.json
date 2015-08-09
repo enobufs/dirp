@@ -1,7 +1,7 @@
 {
   "name": "dirp",
   "version": "0.4.1",
-  "description": "Object directory accessor using tokenized path string.",
+  "description": "A key-value in-memory store using tokenized path as a key.",
   "main": "index.js",
   "scripts": {
     "test": "mocha",

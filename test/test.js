@@ -21,12 +21,12 @@ describe('test', function () {
             var d = dirp.create();
             assert.deepEqual({}, d._data);
         });
-        it("no dirp data should be ignored", function () {
-            var data = { msg: 'hello', st: { count: 21, happy: true }};
+        it("flat data should be imported (calls import internally)", function () {
+            var data = { name: 'paul', age: 28 }
             var d = dirp.create(data);
-            assert.deepEqual({}, d._data);
+            assert.deepEqual(data, d._data);
         });
-        it("dirp data should correctly be set", function () {
+        it("dirp data should correctly be set (calls import internally)", function () {
             var data = { msg: 'hello', st: { count: 21, happy: true }};
             var d = dirp.create();
             d.set('msg', 'hello');
@@ -72,11 +72,25 @@ describe('test', function () {
         });
         it("only the leaf should be readable", function () {
             d.set('us.ca.sfx', 'San Mateo');
-            //console.log('d:', JSON.stringify(d));
             assert.strictEqual('San Mateo', d.get('us.ca.sfx'));
             assert.strictEqual(undefined, d.get('us.ca'));
             assert.strictEqual(undefined, d.get('us'));
         })
+        it("empty string is a valid string", function () {
+            var expects = 'derp';
+            var path = '';
+            d.set(path, expects);
+            assert.deepEqual(expects, d.get(path));
+        });
+        it("empty string is a valid string (2)", function () {
+            var expects = 'derp';
+            var path = '..';
+            d.set(path, expects);
+            assert.deepEqual(expects, d.get(path));
+        });
+        it("invalid path should simply be ignored", function () {
+            d.set(666, 'ignore me');
+        });
     });
 
     describe("#unset method test", function () {
@@ -153,6 +167,90 @@ describe('test', function () {
             var d2 = d.clone();
             assert.ok(d != d2);
             assert.deepEqual(d.raw(), d2.raw());
+        });
+    });
+
+    describe("#import & #export", function () {
+        var d;
+        beforeEach(function () {
+            d = dirp.create();
+        });
+
+        it("#import", function () {
+            var input = {
+                'items.a': { value: 3, quantity: 4 },
+                'items.b': { value: 5, quantity: 6 },
+                'st': { xp: 100, state: 'happy' }
+            };
+            var expected = {
+                items: {
+                    a: input['items.a'],
+                    b: input['items.b']
+                },
+                st: input['st']
+            }
+            d.import(expected);
+            assert.deepEqual(expected, d.raw());
+        });
+
+        it("#import succeeds with derp object", function () {
+            var expected = {
+                items: {
+                    a: { value: 3, quantity: 4 },
+                    b: { value: 5, quantity: 6 }
+                },
+                st: { xp: 100, state: 'happy' }
+            }
+            d.set('items.a', expected.items.a);
+            d.set('items.b', expected.items.b);
+            d.set('st', { xp: 100, state: 'happy' });
+            d.import(d.raw());
+            assert.deepEqual(expected, d.raw());
+        });
+
+        it("#import throws if not derp nor object", function () {
+            assert.throws(function () {
+                d.import([4]);
+            }, 'cannot pass array');
+            assert.throws(function () {
+                d.import('bad');
+            }, 'cannot pass primitive value');
+        });
+
+        it("#export", function () {
+            var input = {
+                'items.a': { value: 3, quantity: 4 },
+                'items.b': { value: 5, quantity: 6 },
+                'st': { xp: 100, state: 'happy' }
+            };
+            var expected = {
+                items: {
+                    a: input['items.a'],
+                    b: input['items.b']
+                },
+                st: input['st']
+            }
+            d.import(input);
+            var exported = d.export();
+            assert.deepEqual(expected, d.raw());
+            assert.deepEqual(input, exported);
+        });
+    });
+
+    describe("#clear", function () {
+        var d;
+        beforeEach(function () {
+            d = dirp.create();
+        });
+        it("should clear everything", function () {
+            d.set('name', 'foo')
+            d.set('age', 17)
+            assert.strictEqual('foo', d.get('name'));
+            assert.strictEqual(17, d.get('age'));
+            d.clear();
+            assert.strictEqual(undefined, d.get('name'));
+            assert.strictEqual(undefined, d.get('age'));
+            assert.equal(0, Object.keys(d.raw()).length);
         });
     });
 });

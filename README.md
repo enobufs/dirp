@@ -1,5 +1,11 @@
 # dirp
-dirp - object directory accessor using tokenized path string.
+dirp - a key-value in-memory store using tokenized path as a key.
+
+## Features
+* Internally manages values in a tree structure:
+    * `unset()` can remove all values under the same path (performance)
+    * Sharing upstream paths saves memory size (efficiency)
+* Accessing non-existing path returns `undefined` (safety)
 
 ## Installation
 ```
@@ -40,7 +46,10 @@ console.log(capitals.raw());
 ```
 create() => instance {Dirp}
 create(delimiter) => instance {Dirp}
+create(delimiter, data) => instance {Dirp}
+create(data) => instance {Dirp}
     delimiter {string} Path delimiter. Defaults to '.'
+    data {object} Data to be imported. See [import](#import) below.
 ```
 * e.g. "products.users.name", "app/lib/test", "country:state:city" ...
 
@@ -80,3 +89,17 @@ raw() => {object}
 clone() => {Dirp}
 ```
 * It only deep-copies *stringifiable* data. If a value passed to `set()` contains a getter/setter, or properties that are not enumerable, those would be ignored. *(Note: this may change in the future)*
+
+#### import *(imports data into derp)*
+```
+import(data) => {void}
+    data {object} Object to be imported. e.g { 'user.name': 'foo', 'user.age': 27 } // a list of `path`:`value` pairs.
+```
+* Throws if the data is not a valid object.
+
+#### export *(returns exported object)*
+```
+export() => {object}
+    data {object} Exported object with a list of `path`:`value` pairs.
+```
+

@@ -6,11 +6,10 @@ function Dirp(delimiter, data) {
         delimiter = void(0);
     }
     this._delim = delimiter || '.';
+    this._data = makeDirp();
 
-    if (isDirp(data)) {
-        this._data = data;
-    } else {
-        this._data = makeDirp(); 
+    if (data) {
+        this.import(data);
     }
 }
 
@@ -18,12 +17,12 @@ Dirp.prototype.set = function (path, val) {
     var paths = this._splitPath(path);
     var o = this._data;
     paths.forEach(function (prop, i) {
-        var prop = paths[i];
         if (i < paths.length - 1) {
             if (!o.hasOwnProperty(prop)) {
                 o[prop] = makeDirp();
             }
             o = o[prop];
+            require('assert').ok(isDirp(o));
         } else {
             o[prop] = val;
         }
@@ -54,6 +53,10 @@ Dirp.prototype.unset = function (path) {
     }
 };
 
+Dirp.prototype.clear = function () {
+    this._data = makeDirp();
+};
+
 Dirp.prototype.exists = function (path) {
     var o = getRawValue(this._splitPath(path), this._data);
     return (o !== undefined);
@@ -67,9 +70,47 @@ Dirp.prototype.clone = function () {
     return new Dirp(this._delim, deepCopy(this._data));
 };
 
+Dirp.prototype.import = function (data) {
+    if (isDirp(data)) {
+        this._data = data;
+        return;
+    }
+    if (isAssociativeArray(data)) {
+        var self = this;
+        this._data = makeDirp();
+        Object.keys(data).forEach(function (prop) {
+            self.set(prop, data[prop]);
+        });
+        return;
+    }
+    throw new Error('Faled to import');
+};
+
+Dirp.prototype.export = function () {
+    var self = this;
+    var exported = {};
+    var cd = function (cwd, obj) {
+        Object.keys(obj).forEach(function (prop) {
+            var newCwd = cwd? [cwd, prop].join(self._delim):prop;
+            var o = obj[prop];
+            if (isDirp(o)) {
+                cd(newCwd, o);
+                return;
+            }
+
+            exported[newCwd] = o;
+        });
+    };
+    cd(null, this._data);
+    return exported;
+};
+
 Dirp.prototype._splitPath = function (path) {
+    if (typeof path !== 'string') {
+        return [];
+    }
     return path.split(this._delim);
-}
+};
 
 function markAsDirp(obj) {
     // mark it derp .. no, dirp
@@ -77,11 +118,11 @@ function markAsDirp(obj) {
         get: function () { return true; }
     });
     return obj;
-};
+}
 
 function makeDirp() {
     return markAsDirp({});
-};
+}
 
 function isDirp(obj) {
     return (isAssociativeArray(obj) && obj._dirp);
@@ -101,7 +142,7 @@ function getRawValue(paths, obj) {
 
 function deepCopy(obj) {
     if (!obj._dirp) {
-        return JSON.parse(JSON.stringify(obj))
+        return JSON.parse(JSON.stringify(obj));
     }
 
     var copy = makeDirp();
@@ -119,7 +160,7 @@ function deepCopy(obj) {
         }
     });
     return copy;
-};
+}
 
 function isAssociativeArray(o) {
     return (o && typeof o === 'object' && !Array.isArray(o));
