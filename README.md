@@ -49,9 +49,10 @@ create(delimiter) => instance {Dirp}
 create(delimiter, data) => instance {Dirp}
 create(data) => instance {Dirp}
     delimiter {string} Path delimiter. Defaults to '.'
-    data {object} Data to be imported. See [import](#import) below.
+    data {object} Data to be imported.
 ```
 * e.g. "products.users.name", "app/lib/test", "country:state:city" ...
+* For `data`, see [import](#import) section below.
 
 ### Instance Methods
 #### set *(sets the path to a value)*
