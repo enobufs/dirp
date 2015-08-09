@@ -52,7 +52,7 @@ create(data) => instance {Dirp}
     data {object} Data to be imported.
 ```
 * e.g. "products.users.name", "app/lib/test", "country:state:city" ...
-* For `data`, see [import](#import) section below.
+* For `data`, see [import](#import-imports-data-into-derp) section below.
 
 ### Instance Methods
 #### set *(sets the path to a value)*
@@ -80,12 +80,14 @@ unset(path) => {void}
 exists(path) => {boolean}
     path {string} Path to be tested
 ```
-#### raw *(returns a raw data {object})*
+
+#### raw *(returns a raw data {object})*
 ```
 raw() => {object}
 ```
 * This returns a direct reference to the internal data. Any modification to the object will affect the source.
-#### clone *(returns a new instance of Dirp with a deep-copy of its raw data)*
+
+#### clone *(returns a new instance of Dirp with a deep-copy of its raw data)*
 ```
 clone() => {Dirp}
 ```
