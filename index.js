@@ -144,9 +144,6 @@ function isDirp(obj) {
 function getRawValue(paths, obj) {
     var o = obj;
     for (var i = 0; i < paths.length; ++i) {
-        if (!isDirp(o)) {
-            return undefined;
-        }
         var prop = paths[i];
         if (!o.hasOwnProperty(prop)) {
             return undefined;

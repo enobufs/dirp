@@ -100,7 +100,8 @@ describe('test', function () {
         it("should not read prop of a user value", function () {
             var val = { type: 2 }
             assert(d.set('items.item', val));
-            assert.strictEqual(undefined, d.get('items.item.type'));
+            assert.strictEqual(d.get('items.item.type'), 2);
+            assert.strictEqual(d.exists('items.item.type'), true);
         });
     });
 
